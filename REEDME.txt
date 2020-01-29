@@ -1,7 +1,7 @@
 ########## REEDME ##########
 
 Programador    : German Figueroa
-Fecha           : 24/01/2020
+Fecha           : 28/01/2020
 API Verssion    : 1.0
 API Name        : Educacion-Test-Backend
 Lenguaje        : PHP

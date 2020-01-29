@@ -106,12 +106,12 @@ $app->group('/api', function () use ($app) {
             if((is_numeric($data['tusuario'])) && ($data['tusuario']==1)){
                 if(is_numeric($idPregunta)){
                     $sql="UPDATE pregunta SET 
-                            id_leccion=:idPregunta,
-                            id_tipo=:idTipoPreg,
-                            pregunta=:pregunta,
-                            respuesta=:respuesta,
-                            puntaje=:puntaje
-                        WHERE id = $idPregunta;";
+                            id_leccion= :idLeccion,
+                            id_tipo= :idTipoPreg,
+                            pregunta= :pregunta,
+                            respuesta= :respuesta,
+                            puntaje= :puntaje
+                          WHERE id=$idPregunta;";
                     try {
                         $db=new db();
                         $db=$db->conectDB();
@@ -122,7 +122,7 @@ $app->group('/api', function () use ($app) {
                         $resultado->bindParam(':idTipoPreg',$data['tipo']);
                         $resultado->bindParam(':pregunta',$data['pregunta']);
                         $resultado->bindParam(':respuesta',$data['respuesta']);
-                        $resultado->bindParam(':puntaje',$data['puntaje']);
+                        $resultado->bindParam(':puntaje',$data['puntaje']);                       
                         //Ejecutar query
                         $resultado->execute();
                         return json_encode("Pregunta Modificada");
@@ -143,11 +143,10 @@ $app->group('/api', function () use ($app) {
         //DELETE PREGUNTA
         $app->delete('/eliminar/{tipo}/{id}', function ($request, $response, $args) {
             $tipoUsr = $args['tipo'];
-            $idCurso = $args['id'];
-            $data = $request->getParsedBody();
+            $idPregunta = $args['id'];
             if(is_numeric($tipoUsr) && ($tipoUsr=1)){
-                if(is_numeric($idCurso)){
-                    $sql="DELETE FROM curso WHERE id = $idCurso;";
+                if(is_numeric($idPregunta)){
+                    $sql="DELETE FROM pregunta WHERE id = $idPregunta;";
                     try {
                         $db=new db();
                         $db=$db->conectDB();
@@ -157,15 +156,15 @@ $app->group('/api', function () use ($app) {
                         $resultado->execute();
                         //Validacion de Ejecución
                         if($resultado->rowCount() >0){
-                            return json_encode("Curso Eliminado");
+                            return json_encode("Pregunta Eliminada");
                         }else{
-                            return json_encode("No existe Curso con ID $idCurso");
+                            return json_encode("No existe Pregunta con ID $idPregunta");
                         }
                     } catch (PDOException $e) {
                         return '{"error":{"text":'.$e->getMessage().'}';
                     }
                 }else{
-                    return json_encode("ID '$idCurso' no es valido");
+                    return json_encode("ID '$idPregunta' no es valido");
                 }
             }else{
                 return json_encode("Tipo de usuario incorrecto o no valido");

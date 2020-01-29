@@ -115,7 +115,6 @@ $app->group('/api', function () use ($app) {
         $app->delete('/eliminar/{tipo}/{id}', function ($request, $response, $args) {
             $tipoUsr = $args['tipo'];
             $idCurso = $args['id'];
-            $data = $request->getParsedBody();
             if(is_numeric($tipoUsr) && ($tipoUsr=1)){
                 if(is_numeric($idCurso)){
                     $sql="DELETE FROM curso WHERE id = $idCurso;";
