@@ -1,0 +1,245 @@
+########## REEDME ##########
+
+Programador    : German Figueroa
+Fecha           : 24/01/2020
+API Verssion    : 1.0
+API Name        : Educacion-Test-Backend
+Lenguaje        : PHP
+
+########## Estructura ##########
+
+>src            => "Aloja de configuracion y funciones de API"
+>>config        => "Aloja Configuracion"
+>>>db.php       => "Archivo fuente con conexion a DB"
+>>ruta          => "Aloja archivos fuente"
+>>>curso.php    => "Archivo almacena Funciones relacionadas con la tabla Curso"
+>>>leccion.php  => "Archivo almacena Funciones relacionadas con la tabla Leccion"
+>>>pregunta.php => "Archivo almacena Funciones relacionadas con la tabla Pregunta"
+>vendor         => "Aloja fuentes de Framework SLIM 3.12 y gestor de dependencias Composer"
+>.htaccess     => "Archivo de configuracion APACHE"
+>composer.json  =>"Archivo de declaracion de dependencias"
+>composer.lock  =>"Archivo autogenerado; registro exacto de las versiones de dependencia"
+>DER.PNG       => "Imagen de estructura BBDD"
+>index.php     => "Archivo Main de API"
+>REEDME.txt    => "Archivo Leeme con caracter informativo sobre la arquitectura y el uso de la API"
+>script.sql    => "Script para montar base de datos 'educdb' en MySQL"
+
+########## API Educacion-Test-Backend v.1.0 ##########
+
+>curso.php
+
+#URL:/api/cursos       
+|Funcion que permite la lectura de todos los cursos | GET
+
+return JSON:
+|[
+|--{
+|----"id": "1",
+|----"id_curso_prerrequisito": "0",
+|----"nombre": "Curso 1"
+|--},
+|--{
+|----"id": "2",
+|----"id_curso_prerrequisito": "1",
+|----"nombre": "Curso 2"
+|--}
+|]
+
+#URL:/api/cursos/{id}       
+|Funcion que permite la lectura de un curso espesifico por su identificacion | GET
+
+return JSON:
+|[
+|--{
+|----"id": "1",
+|----"id_curso_prerrequisito": "0",
+|----"nombre": "Curso 1"
+|--}
+|]
+
+#URL:/api/cursos/nuevo
+|Funcion que permite la insercion de un curso nuevo | POST
+
+solicitud JSON:
+|{
+|--"tusuario":1,-> tipo de usuario que genera la solicitud
+|--"nombre":"curso 5",-> nombre del nuevo curso
+|--"prerrequisito":4-> id de curso prerrequisito si es 0 curso no posee prerrequisito
+|}
+
+return JSON:
+*Evento ok
+|"Curso Agregado"
+
+*Evento fallido
+|{
+|--"error":{
+|---"text":"mensaje de error"
+|--}
+|}
+
+*Evento tipo de usuario incalido
+|"Tipo de usuario incorrecto o no valido"
+
+#URL:/api/cursos/editar/{id} 
+|Funcion que permite la edicion de un curso | PUT
+
+solicitud JSON:
+|{
+|--"tusuario":1,-> tipo de usuario que genera la solicitud
+|--"nombre":"curso 5",-> nombre del curso
+|--"prerrequisito":4-> id de curso prerrequisito si es 0 curso no posee prerrequisito
+|}
+
+return JSON:
+*Evento ok
+|"Curso Modificado"
+
+*Evento fallido
+|{
+|--"error":{
+|---"text":"mensaje de error"
+|--}
+|}
+
+*Evento id no valido
+|"ID {id} no es valido"
+
+*Evento tipo de usuario incalido
+|"Tipo de usuario incorrecto o no valido"
+
+
+#URL:/api/cursos/eliminar/{tipo_usuario}/{id}
+|Funcion que permite la edicion de un curso | PUT
+
+return JSON:
+*Evento ok
+|"Curso Eliminado"
+
+*Evento fallido
+|{
+|--"error":{
+|---"text":"mensaje de error"
+|--}
+|}
+
+*Evento id no valido
+|"ID {id} no es valido"
+
+*Evento tipo de usuario incalido
+|"Tipo de usuario incorrecto o no valido"
+
+>leccion.php
+
+#URL:/api/lecciones       
+|Funcion que permite la lectura de todas las lecciones | GET
+
+return JSON:
+|[
+|--{
+|---"id": "1",
+|---"id_curso": "1",
+|---"id_leccion_prerrequisito": "0",
+|---"nombre": "Leccion 1-1",
+|---"puntaje_aprobacion": "60"
+|--},
+|--{
+|---"id": "2",
+|---"id_curso": "1",
+|---"id_leccion_prerrequisito": "1",
+|---"nombre": "Leccion 2-1",
+|---"puntaje_aprobacion": "60"
+|--}
+|]
+
+#URL:/api/lecciones/{id}       
+|Funcion que permite la lectura de una leccion espesifica por su identificacion | GET
+
+return JSON:
+|[
+|--{
+|---"id": "7",
+|---"id_curso": "7",
+|---"id_leccion_prerrequisito": "0",
+|---"nombre": "PAradigma Orientado a Objeto",
+|---"puntaje_aprobacion": "60"
+|--}
+|]
+
+#URL:/api/lecciones/nuevo
+|Funcion que permite la insercion de una leccion nueva | POST
+
+solicitud JSON:
+|{
+|--"tusuario":1,-> tipo de usuario que genera la solicitud
+|--"id_curso":7, -> id de curso asociado
+|--"prerrequisito":0,> id de leccion prerrequisito si es 0 leccion no posee prerrequisito
+|--"nombre":"leccion nueva", -> nombre de nueva leccion
+|--"puntaje":60 -> Puntaje de aprobacion minimo para la leccion
+|}
+
+return JSON:
+*Evento ok
+|"Leccion Agregada"
+
+*Evento fallido
+|{
+|--"error":{
+|---"text":"mensaje de error"
+|--}
+|}
+
+*Evento tipo de usuario incalido
+|"Tipo de usuario incorrecto o no valido"
+
+#URL:/api/lecciones/editar/{id} 
+|Funcion que permite la edicion de una leccion | PUT
+
+solicitud JSON:
+|{
+|--"tusuario":1,-> tipo de usuario que genera la solicitud
+|--"id_curso":7, -> id de curso asociado
+|--"prerrequisito":0,> id de leccion prerrequisito si es 0 leccion no posee prerrequisito
+|--"nombre":"leccion nueva", -> nombre de leccion
+|--"puntaje":60 -> Puntaje de aprobacion minimo para la leccion
+|}
+
+return JSON:
+*Evento ok
+|"Leccion Modificado"
+
+*Evento fallido
+|{
+|--"error":{
+|---"text":"mensaje de error"
+|--}
+|}
+
+*Evento id no valido
+|"ID {id} no es valido"
+
+*Evento tipo de usuario incalido
+|"Tipo de usuario incorrecto o no valido"
+
+
+#URL:/api/lecciones/eliminar/{tipo_usuario}/{id}
+|Funcion que permite la edicion de un leccion | PUT
+
+return JSON:
+*Evento ok
+|"Leccion Eliminado"
+
+*Evento fallido
+|{
+|--"error":{
+|---"text":"mensaje de error"
+|--}
+|}
+
+*Evento id no valido
+|"ID {id} no es valido"
+
+*Evento tipo de usuario incalido
+|"Tipo de usuario incorrecto o no valido"
+
+########## FIN REEDME ##########
