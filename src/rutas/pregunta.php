@@ -232,7 +232,7 @@ $app->group('/api', function () use ($app) {
     });
 });
 //Funciones
-function getPregunta($idPregunta,$tipoUsr){
+function getPregunta($tipoUsr,$idPregunta){
     if((is_numeric($tipoUsr))&&($tipoUsr==1)&&(is_numeric($idPregunta))){
         $sql="SELECT * FROM pregunta WHERE id=$idPregunta";
     }else if((is_numeric($tipoUsr))&&($tipoUsr==2)&&(is_numeric($idPregunta))){

@@ -129,6 +129,44 @@ return JSON:
 *Evento tipo de usuario incalido
 |"Tipo de usuario incorrecto o no valido"
 
+
+#URL:/api/cursos/lista/{id_alumno}
+|Funcion que permite la obtencion de cursos por id de alumno indicando su estado actual (APROBADO o PRENDIENTE)|GET
+
+return JSON:
+*Evento ok
+|[
+|--{
+|---"id_estudiante": "1",
+|---"id_curso": "1",
+|---"curso": "Introduccion a la programación",
+|---"curso_pre": "0",
+|---"estado_curso": "APROBADO"
+|--},
+|--{
+|---"id_estudiante": "1",
+|---"id_curso": "2",
+|---"curso": "curso 2",
+|---"curso_pre": "1",
+|---"estado_curso": "PENDIENTE"
+|--}
+|]
+
+#URL:/api/cursos/asigna
+|Funcion que permite la obtencion de cursos por id de alumno indicando su estado actual (APROBADO o PRENDIENTE)|GET
+
+solicitud JSON:
+|{
+|--"tusuario":1,-> tipo de usuario que genera la solicitud
+|--"id_curso":2,-> id de curso a asignar
+|--"id_alumno":1 -> id de alumno a asignar
+|}
+
+return JSON:
+*Evento ok
+|"Curso Asignado"
+
+
 >leccion.php
 
 #URL:/api/lecciones       
@@ -241,5 +279,201 @@ return JSON:
 
 *Evento tipo de usuario incalido
 |"Tipo de usuario incorrecto o no valido"
+
+#URL:/api/lecciones/lista/{id_alumno}
+|Funcion que permite la obtencion de lecciones por id de alumno indicando su estado actual (APROBADO o PRENDIENTE)|GET
+
+return JSON:
+*Evento ok
+|[
+|--{
+|---"id_estudiante": "1",
+|---"estudiante": "German",
+|---"id_curso": "1",
+|---"id_leccion": "1",
+|---"leccion": "Leccion 1-1",
+|---"estado": "APROBADO"
+|--},
+|--{
+|---"id_estudiante": "1",
+|---"estudiante": "German",
+|---"id_curso": "1",
+|---"id_leccion": "2",
+|---"leccion": "Leccion 2-1",
+|---"estado": "APROBADO"
+|--}
+|]
+
+>pregunta.php
+
+#URL:/api/preguntas/{tip_usuario}
+|Funcion que permite la lectura de todoas las preguntas respuesta depende del tipo de usuario | GET
+
+return JSON (en caso de usuario tipo 1):
+|[
+|--{
+|---"id": "1",
+|---"id_leccion": "1",
+|---"id_tipo": "1",
+|---"pregunta": "Un algoritmo es una sucesión de instrucciones detalladas para realizar determinada tarea",
+|---"respuesta": "1",
+|---"puntaje": "60"
+|--},
+|--{
+|---"id": "2",
+|---"id_leccion": "1",
+|---"id_tipo": "1",
+|---"pregunta": "la sentencia if es un una sentencia cíclica",
+|---"respuesta": "0",
+|---"puntaje": "45"
+|--}
+|]
+
+return JSON (en caso de usuario tipo 2):
+|[
+|--{
+|---"id": "1",
+|---"id_leccion": "1",
+|---"id_tipo": "1",
+|---"pregunta": "Un algoritmo es una sucesión de instrucciones detalladas para realizar determinada tarea",
+|---"puntaje": "60"
+|--},
+|--{
+|---"id": "2",
+|---"id_leccion": "1",
+|---"id_tipo": "1",
+|---"pregunta": "la sentencia if es un una sentencia cíclica",
+|---"puntaje": "45"
+|--}
+|]
+
+
+#URL:/api/preguntas/{tip_usuario}/{id}
+|Funcion que permite la lectura de una pregunta, respuesta depende del tipo de usuario | GET
+
+return JSON (en caso de usuario tipo 1):
+|[
+|--{
+|---"id": "1",
+|---"id_leccion": "1",
+|---"id_tipo": "1",
+|---"pregunta": "Un algoritmo es una sucesión de instrucciones detalladas para realizar determinada tarea",
+|---"respuesta": "1",
+|---"puntaje": "60"
+|--}
+|]
+
+return JSON (en caso de usuario tipo 2):
+|[
+|--{
+|---"id": "1",
+|---"id_leccion": "1",
+|---"id_tipo": "1",
+|---"pregunta": "Un algoritmo es una sucesión de instrucciones detalladas para realizar determinada tarea",
+|---"puntaje": "60"
+|--}
+|]
+
+#URL:/api/preguntas/nuevo
+|Funcion que permite la insercion de una pregunta nuevo | POST
+
+solicitud JSON:
+|{
+|--"tusuario":1,
+|--"id_leccion":1,
+|--"tipo":1,
+|--"pregunta":"Bulean puede tomar 1 de 2 valores; Verdadero o Falso",
+|--"respuesta":1,
+|--"puntaje": 60
+|}
+
+return JSON:
+*Evento ok
+|"Pregunta Agregado"
+
+*Evento fallido
+|{
+|--"error":{
+|---"text":"mensaje de error"
+|--}
+|}
+
+*Evento tipo de usuario incalido
+|"Tipo de usuario incorrecto o no valido"
+
+#URL:/api/preguntas/editar/{id} 
+|Funcion que permite la edicion de uan pregunta | PUT
+
+solicitud JSON:
+|{
+|--"tusuario":1,
+|--"id_leccion":1,
+|--"tipo":1,
+|--"pregunta":"Un algoritmo es una sucesión de instrucciones detalladas para realizar determinada tarea",
+|--"respuesta":1,
+|--"puntaje": 60
+|}
+
+return JSON:
+*Evento ok
+|"Pregunta Modificada"
+
+*Evento fallido
+|{
+|--"error":{
+|---"text":"mensaje de error"
+|--}
+|}
+
+*Evento id no valido
+|"ID {id} no es valido"
+
+*Evento tipo de usuario incalido
+|"Tipo de usuario incorrecto o no valido"
+
+
+#URL:/api/preguntas/eliminar/{tipo_usuario}/{id}
+|Funcion que permite la eliminacion de una pregunta | DELETE
+
+return JSON:
+*Evento ok
+|"Pregunta Eliminado"
+
+*Evento fallido
+|{
+|--"error":{
+|---"text":"mensaje de error"
+|--}
+|}
+
+*Evento id no valido
+|"ID {id} no es valido"
+
+*Evento tipo de usuario incalido
+|"Tipo de usuario incorrecto o no valido"
+
+
+#URL:/api/preguntas/evaluar
+|Funcion que permite la evaluacion de una leccion y valida si el curso ya fue aprobado|GET
+
+solicitud JSON:
+|{
+|--"id_alumno":1,
+|--"id_leccion":2,
+|--"preguntas":{
+|----"0": {
+|--------"id_pregunta": 1,
+|--------"respuesta": "A"
+|----},
+|----"1": {
+|--------"id_pregunta": 2,
+|--------"respuesta": "B"
+|----}
+|--}
+|}
+
+return JSON:
+*Evento ok
+|"Evaluacion Actualizada"
 
 ########## FIN REEDME ##########

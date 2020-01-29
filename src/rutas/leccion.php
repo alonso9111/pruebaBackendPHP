@@ -28,6 +28,7 @@ $app->group('/api', function () use ($app) {
             $idLeccion = $args['id'];
             return getLeccion($idLeccion);
         });
+        //GET LECCION BY ID ALUMNO
         $app->get('/lista/{id_alumno}', function ($request, $response, $args) {
             $idLeccion = $args['id_alumno'];
             return listaLecciones($idLeccion);
