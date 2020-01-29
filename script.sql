@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 24-01-2020 a las 15:20:26
+-- Tiempo de generación: 29-01-2020 a las 12:40:44
 -- Versión del servidor: 10.1.36-MariaDB
 -- Versión de PHP: 7.2.11
 
@@ -44,7 +44,8 @@ INSERT INTO `curso` (`id`, `id_curso_prerrequisito`, `nombre`) VALUES
 (1, 0, 'Introduccion a la programación'),
 (2, 1, 'curso 2'),
 (3, 2, 'curso 3'),
-(4, 3, 'curso 4');
+(4, 3, 'curso 4'),
+(7, 4, 'Programación POO I');
 
 -- --------------------------------------------------------
 
@@ -65,7 +66,6 @@ CREATE TABLE `cursoestudiante` (
 
 INSERT INTO `cursoestudiante` (`id`, `id_estudiante`, `id_curso`, `estado_curso`) VALUES
 (1, 1, 1, 1),
-(2, 2, 1, 1),
 (3, 1, 2, 0);
 
 -- --------------------------------------------------------
@@ -96,8 +96,8 @@ INSERT INTO `estudiante` (`id`, `nombre`) VALUES
 CREATE TABLE `evaluacion` (
   `id` int(11) NOT NULL,
   `id_estudiante` int(11) NOT NULL,
-  `id_pregunta` int(11) NOT NULL,
-  `respuesta_evaluacion` varchar(100) NOT NULL,
+  `id_leccion` int(11) NOT NULL,
+  `puntaje_evaluacion` double NOT NULL,
   `estado` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -105,12 +105,9 @@ CREATE TABLE `evaluacion` (
 -- Volcado de datos para la tabla `evaluacion`
 --
 
-INSERT INTO `evaluacion` (`id`, `id_estudiante`, `id_pregunta`, `respuesta_evaluacion`, `estado`) VALUES
-(1, 1, 1, '1', 1),
-(2, 2, 1, '0', 0),
-(3, 2, 2, '1', 1),
-(4, 1, 2, '0', 1),
-(5, 1, 3, 'A', 1);
+INSERT INTO `evaluacion` (`id`, `id_estudiante`, `id_leccion`, `puntaje_evaluacion`, `estado`) VALUES
+(6, 1, 1, 105, 1),
+(7, 1, 2, 60, 1);
 
 -- --------------------------------------------------------
 
@@ -135,6 +132,35 @@ INSERT INTO `leccion` (`id`, `id_curso`, `id_leccion_prerrequisito`, `nombre`, `
 (2, 1, 1, 'Leccion 2-1', 60),
 (3, 2, 0, 'Leccion 1-2', 60),
 (5, 2, 3, 'Leccion editada 2-2', 65);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `lista_curso`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `lista_curso` (
+`id_estudiante` int(11)
+,`id_curso` int(11)
+,`curso` varchar(50)
+,`curso_pre` int(11)
+,`estado_curso` varchar(9)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `lista_leccion`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `lista_leccion` (
+`id_estudiante` int(11)
+,`estudiante` varchar(50)
+,`id_curso` int(11)
+,`id_leccion` int(11)
+,`leccion` varchar(50)
+,`estado` varchar(9)
+);
 
 -- --------------------------------------------------------
 
@@ -185,73 +211,42 @@ INSERT INTO `tipo_pregunta` (`id`, `descripcion`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estructura Stand-in para la vista `vwevalua`
+-- Estructura Stand-in para la vista `valida_curso`
 -- (Véase abajo para la vista actual)
 --
-CREATE TABLE `vwevalua` (
+CREATE TABLE `valida_curso` (
 `id_estudiante` int(11)
-,`estudiante` varchar(50)
-,`id_leccion` int(11)
-,`respuestas_correctas` bigint(21)
-,`t_puntaje` double
-,`puntaje_aprobacion` double
+,`id_curso` int(11)
+,`lecciones` bigint(21)
+,`aprobados` decimal(23,0)
 );
 
 -- --------------------------------------------------------
 
 --
--- Estructura Stand-in para la vista `vwlistacurso`
--- (Véase abajo para la vista actual)
+-- Estructura para la vista `lista_curso`
 --
-CREATE TABLE `vwlistacurso` (
-`id_curso` int(11)
-,`id_curso_prerrequisito` int(11)
-,`id_estudiante` int(11)
-,`estado_curso` tinyint(1)
-);
+DROP TABLE IF EXISTS `lista_curso`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `lista_curso`  AS  select `cursoestudiante`.`id_estudiante` AS `id_estudiante`,`curso`.`id` AS `id_curso`,`curso`.`nombre` AS `curso`,`curso`.`id_curso_prerrequisito` AS `curso_pre`,if(`cursoestudiante`.`estado_curso`,'APROBADO','PENDIENTE') AS `estado_curso` from (`curso` left join `cursoestudiante` on((`cursoestudiante`.`id_curso` = `curso`.`id`))) order by `cursoestudiante`.`id_estudiante` desc,`curso`.`id` ;
 
 -- --------------------------------------------------------
 
 --
--- Estructura Stand-in para la vista `vwpreguntasbyleccion`
--- (Véase abajo para la vista actual)
+-- Estructura para la vista `lista_leccion`
 --
-CREATE TABLE `vwpreguntasbyleccion` (
-`id_curso` int(11)
-,`id_leccion` int(11)
-,`nombre` varchar(50)
-,`id_pregunta` int(11)
-,`pregunta` varchar(100)
-,`tipo_pregunta` varchar(100)
-,`puntaje` double
-);
+DROP TABLE IF EXISTS `lista_leccion`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `lista_leccion`  AS  select `cursoestudiante`.`id_estudiante` AS `id_estudiante`,`estudiante`.`nombre` AS `estudiante`,`cursoestudiante`.`id_curso` AS `id_curso`,`leccion`.`id` AS `id_leccion`,`leccion`.`nombre` AS `leccion`,if(`evaluacion`.`estado`,'APROBADO','PENDIENTE') AS `estado` from ((((`curso` join `leccion` on((`leccion`.`id_curso` = `curso`.`id`))) left join `cursoestudiante` on((`cursoestudiante`.`id_curso` = `curso`.`id`))) left join `estudiante` on((`cursoestudiante`.`id_estudiante` = `estudiante`.`id`))) left join `evaluacion` on(((`evaluacion`.`id_estudiante` = `estudiante`.`id`) and (`evaluacion`.`id_leccion` = `leccion`.`id`)))) order by `estudiante`.`id`,`curso`.`id`,`leccion`.`id` ;
 
 -- --------------------------------------------------------
 
 --
--- Estructura para la vista `vwevalua`
+-- Estructura para la vista `valida_curso`
 --
-DROP TABLE IF EXISTS `vwevalua`;
+DROP TABLE IF EXISTS `valida_curso`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vwevalua`  AS  select `est`.`id` AS `id_estudiante`,`est`.`nombre` AS `estudiante`,`l`.`id` AS `id_leccion`,count(`p`.`id`) AS `respuestas_correctas`,sum(`p`.`puntaje`) AS `t_puntaje`,`l`.`puntaje_aprobacion` AS `puntaje_aprobacion` from ((((`evaluacion` `eva` join `estudiante` `est` on((`eva`.`id_estudiante` = `est`.`id`))) join `pregunta` `p` on((`eva`.`id_pregunta` = `p`.`id`))) join `tipo_pregunta` `tp` on((`p`.`id_tipo` = `tp`.`id`))) join `leccion` `l` on((`p`.`id_leccion` = `l`.`id`))) where (`eva`.`estado` = 1) group by `est`.`id`,`l`.`id` ;
-
--- --------------------------------------------------------
-
---
--- Estructura para la vista `vwlistacurso`
---
-DROP TABLE IF EXISTS `vwlistacurso`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vwlistacurso`  AS  select `c`.`id` AS `id_curso`,`c`.`id_curso_prerrequisito` AS `id_curso_prerrequisito`,`ce`.`id_estudiante` AS `id_estudiante`,`ce`.`estado_curso` AS `estado_curso` from (`curso` `c` left join `cursoestudiante` `ce` on((`ce`.`id_curso` = `c`.`id`))) ;
-
--- --------------------------------------------------------
-
---
--- Estructura para la vista `vwpreguntasbyleccion`
---
-DROP TABLE IF EXISTS `vwpreguntasbyleccion`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vwpreguntasbyleccion`  AS  select `leccion`.`id_curso` AS `id_curso`,`leccion`.`id` AS `id_leccion`,`leccion`.`nombre` AS `nombre`,`pregunta`.`id` AS `id_pregunta`,`pregunta`.`pregunta` AS `pregunta`,`tipo_pregunta`.`descripcion` AS `tipo_pregunta`,`pregunta`.`puntaje` AS `puntaje` from ((`leccion` join `pregunta` on((`pregunta`.`id_leccion` = `leccion`.`id`))) join `tipo_pregunta` on((`pregunta`.`id_tipo` = `tipo_pregunta`.`id`))) ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `valida_curso`  AS  select `cursoestudiante`.`id_estudiante` AS `id_estudiante`,`cursoestudiante`.`id_curso` AS `id_curso`,count(`leccion`.`nombre`) AS `lecciones`,sum(if(`evaluacion`.`estado`,1,0)) AS `aprobados` from ((((`curso` join `leccion` on((`leccion`.`id_curso` = `curso`.`id`))) left join `cursoestudiante` on((`cursoestudiante`.`id_curso` = `curso`.`id`))) left join `estudiante` on((`cursoestudiante`.`id_estudiante` = `estudiante`.`id`))) left join `evaluacion` on(((`evaluacion`.`id_estudiante` = `estudiante`.`id`) and (`evaluacion`.`id_leccion` = `leccion`.`id`)))) group by `estudiante`.`id`,`curso`.`id` ;
 
 --
 -- Índices para tablas volcadas
@@ -283,7 +278,7 @@ ALTER TABLE `estudiante`
 ALTER TABLE `evaluacion`
   ADD PRIMARY KEY (`id`),
   ADD KEY `id_estudiante` (`id_estudiante`),
-  ADD KEY `id_pregunta` (`id_pregunta`);
+  ADD KEY `id_leccion` (`id_leccion`);
 
 --
 -- Indices de la tabla `leccion`
@@ -314,7 +309,7 @@ ALTER TABLE `tipo_pregunta`
 -- AUTO_INCREMENT de la tabla `curso`
 --
 ALTER TABLE `curso`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `cursoestudiante`
@@ -332,19 +327,19 @@ ALTER TABLE `estudiante`
 -- AUTO_INCREMENT de la tabla `evaluacion`
 --
 ALTER TABLE `evaluacion`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `leccion`
 --
 ALTER TABLE `leccion`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `pregunta`
 --
 ALTER TABLE `pregunta`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `tipo_pregunta`
@@ -369,7 +364,7 @@ ALTER TABLE `cursoestudiante`
 --
 ALTER TABLE `evaluacion`
   ADD CONSTRAINT `evaluacion_ibfk_1` FOREIGN KEY (`id_estudiante`) REFERENCES `estudiante` (`id`),
-  ADD CONSTRAINT `evaluacion_ibfk_2` FOREIGN KEY (`id_pregunta`) REFERENCES `pregunta` (`id`);
+  ADD CONSTRAINT `evaluacion_ibfk_2` FOREIGN KEY (`id_leccion`) REFERENCES `leccion` (`id`);
 
 --
 -- Filtros para la tabla `leccion`

@@ -143,5 +143,26 @@ $app->group('/api', function () use ($app) {
             $resultado=null;
             $db=null;
         });
+        function updateCursoEstudiante($idCurso, $idAlumno, $estado){
+            $sql="UPDATE `cursoestudiante` 
+                  SET 
+                    estado_curso = :estado
+                  WHERE 
+                    id_estudiante=$idAlumno AND id_curso=$idCurso";
+            try {
+                $db=new db();
+                $db=$db->conectDB();
+                //Preparar query
+                $resultado = $db->prepare($sql);
+                //Asignar Parametros
+                $resultado->bindParam(':estado',$estado);
+                //Ejecutar query
+                $resultado->execute();
+                return json_encode("Asignacion Actualizada");
+                
+            } catch (PDOException $e) {
+                return '{"error":{"text":'.$e->getMessage().'}';
+            }
+        }
     });
 });

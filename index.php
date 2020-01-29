@@ -6,14 +6,8 @@ $config = ['settings' => [
     'addContentLengthHeader' => false,
 ]];
 $app = new \Slim\App($config);
-
-//ROUTES
-require 'src/rutas/curso.php';
-require 'src/rutas/leccion.php';
-require 'src/rutas/pregunta.php';
 $app->get('/', function ($request, $response) {
     $reedme=file_get_contents('REEDME.txt');
-
     print_r('
         <!DOCTYPE html>
         <html lang="es">
@@ -32,6 +26,12 @@ $app->get('/', function ($request, $response) {
         </html>
     ');
 });
+
+//ROUTES
+require 'src/rutas/curso.php';
+require 'src/rutas/leccion.php';
+require 'src/rutas/pregunta.php';
+
 // RUN APP
 $app->run();
 ?>

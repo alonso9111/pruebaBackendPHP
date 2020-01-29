@@ -26,26 +26,7 @@ $app->group('/api', function () use ($app) {
         //GET LECCION BY ID
         $app->get('/{id}', function ($request, $response, $args) {
             $idLeccion = $args['id'];
-            if(is_numeric($idLeccion)){
-                $sql="SELECT * FROM leccion WHERE id=$idLeccion";
-                try {
-                    $db=new db();
-                    $db=$db->conectDB();
-                    $resultado = $db->query($sql);
-                    if($resultado->rowCount()>0){
-                        $lecciones = $resultado->fetchAll(PDO::FETCH_OBJ);
-                        return json_encode($lecciones);
-                    }else{
-                        return json_encode("No existe Leccion con ID $idLeccion");
-                    }
-                } catch (PDOException $e) {
-                    return '{"error":{"text":'.$e->getMessage().'}';
-                }
-            }else{
-                return json_encode("ID '$idLeccion' no es valido");
-            }
-            $resultado=null;
-            $db=null;
+            return getLeccion($idLeccion);
         });
         //POST ADD LECCION
         $app->post('/nuevo', function ($request, $response) {
@@ -157,3 +138,25 @@ $app->group('/api', function () use ($app) {
         });
     });
 });
+function getLeccion($idLeccion){
+    if(is_numeric($idLeccion)){
+        $sql="SELECT * FROM leccion WHERE id=$idLeccion";
+        try {
+            $db=new db();
+            $db=$db->conectDB();
+            $resultado = $db->query($sql);
+            if($resultado->rowCount()>0){
+                $lecciones = $resultado->fetchAll(PDO::FETCH_OBJ);
+                return json_encode($lecciones);
+            }else{
+                return json_encode("No existe Leccion con ID $idLeccion");
+            }
+        } catch (PDOException $e) {
+            return '{"error":{"text":'.$e->getMessage().'}';
+        }
+    }else{
+        return json_encode("ID '$idLeccion' no es valido");
+    }
+    $resultado=null;
+    $db=null;
+}
