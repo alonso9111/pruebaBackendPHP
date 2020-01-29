@@ -454,7 +454,7 @@ return JSON:
 
 
 #URL:/api/preguntas/evaluar
-|Funcion que permite la evaluacion de una leccion y valida si el curso ya fue aprobado|GET
+|Funcion que permite la evaluacion de una leccion y valida si el curso ya fue aprobado|POST
 
 solicitud JSON:
 |{
