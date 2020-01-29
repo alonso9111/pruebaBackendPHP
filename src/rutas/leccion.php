@@ -28,6 +28,10 @@ $app->group('/api', function () use ($app) {
             $idLeccion = $args['id'];
             return getLeccion($idLeccion);
         });
+        $app->get('/lista/{id_alumno}', function ($request, $response, $args) {
+            $idLeccion = $args['id_alumno'];
+            return listaLecciones($idLeccion);
+        });
         //POST ADD LECCION
         $app->post('/nuevo', function ($request, $response) {
             $tipoUsr= $request->getParam('tusuario');
@@ -159,4 +163,25 @@ function getLeccion($idLeccion){
     }
     $resultado=null;
     $db=null;
+}
+function listaLecciones($idAlumno){
+    if(is_numeric($idAlumno)){
+        $sql = "SELECT * FROM lista_leccion WHERE id_estudiante is null or id_estudiante = $idAlumno;";
+        try {
+            $db=new db();
+            $db=$db->conectDB();
+            $resultado = $db->query($sql);
+            if($resultado->rowCount()>0){
+                $lecciones = $resultado->fetchAll(PDO::FETCH_OBJ);
+                return json_encode($lecciones);
+            }else{
+                return json_encode("No existe Lecciones en la BD o Alumno Invalido");
+            }
+        } catch (PDOException $e) {
+            return '{"error":{"text":'.$e->getMessage().'}';
+        }
+    }else{
+        return json_encode("ID '$idAlumno' no es valido");
+    }
+    
 }
